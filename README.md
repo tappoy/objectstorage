@@ -27,7 +27,7 @@ type ObjectInfo struct {
 ```
 
 # Functions
-- `NewObjectStorageClient(options Options) (*ObjectStorage, error)` - Create a new object storage client.
+- `NewObjectStorage(options Options) (*ObjectStorage, error)` - Create a new object storage client.
 - `(ost *ObjectStorage) ListContainers(prefix string) ([]string, error)` - List containers.
 - `(ost *ObjectStorage) CreateContainer(name string) error` - Create a container.
 - `(ost *ObjectStorage) DeleteContainer(name string) error` - Delete a container.
