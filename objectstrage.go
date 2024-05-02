@@ -11,6 +11,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -37,6 +38,9 @@ var (
 
 	// The specified key does not exist.
 	ErrCannotCreateFile = errors.New("ErrCannotCreateFile")
+
+	// Cannot open the file.
+	ErrCannotOpenFile = errors.New("ErrCannotOpenFile")
 )
 
 type ObjectStorage struct {
@@ -185,22 +189,30 @@ func (ost *ObjectStorage) DeleteContainer(name string) error {
 // Upload a file to the container.
 //
 // Errors:
+//   - ErrCannotOpenFile
 //   - ErrNoSuchBucket
 //   - "ErrGophercloud: %v"
 func (ost *ObjectStorage) UploadFile(containerName string, path string) error {
 	file, err := os.Open(path)
 	if err != nil {
-		return apiError(err)
+		return ErrCannotOpenFile
 	}
 	defer file.Close()
 
+	return ost.Upload(containerName, filepath.Base(path), file)
+}
+
+// Upload to the container from io.Reader.
+//
+// Errors:
+//   - ErrNoSuchBucket
+//   - "ErrGophercloud: %v"
+func (ost *ObjectStorage) Upload(containerName string, objectName string, reader io.Reader) error {
 	opt := objects.CreateOpts{
-		Content: file,
+		Content: reader,
 	}
 
-	fileName := filepath.Base(path)
-
-	result := objects.Create(ost.ctx, ost.client, containerName, fileName, opt)
+	result := objects.Create(ost.ctx, ost.client, containerName, objectName, opt)
 
 	if result.Err != nil {
 		if strings.Contains(result.Err.Error(), "NoSuchBucket") {

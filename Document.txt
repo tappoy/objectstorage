@@ -25,6 +25,9 @@ var (
 
 	// The specified key does not exist.
 	ErrCannotCreateFile = errors.New("ErrCannotCreateFile")
+
+	// Cannot open the file.
+	ErrCannotOpenFile = errors.New("ErrCannotOpenFile")
 )
 
 TYPES
@@ -94,10 +97,18 @@ func (ost *ObjectStorage) ListObjects(containerName string) ([]ObjectInfo, error
       - ErrNoSuchBucket
       - "ErrGophercloud: %v"
 
+func (ost *ObjectStorage) Upload(containerName string, objectName string, reader io.Reader) error
+    Upload to the container from io.Reader.
+
+    Errors:
+      - ErrNoSuchBucket
+      - "ErrGophercloud: %v"
+
 func (ost *ObjectStorage) UploadFile(containerName string, path string) error
     Upload a file to the container.
 
     Errors:
+      - ErrCannotOpenFile
       - ErrNoSuchBucket
       - "ErrGophercloud: %v"
 
