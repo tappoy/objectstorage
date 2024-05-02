@@ -1,4 +1,4 @@
-module objectstrage
+module github.com/tappoy/objectstorage
 
 go 1.22.1
 

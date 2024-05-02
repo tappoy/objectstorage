@@ -1,12 +1,11 @@
-package main
+package objectstorage
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
-  "testing"
-  "io/ioutil"
+	"testing"
 )
-
 
 // test main
 func TestMain(m *testing.M) {
@@ -27,7 +26,7 @@ func TestAll(t *testing.T) {
 	ost, err := NewObjectStorage(option)
 
 	if err != nil {
-    t.Error(err)
+		t.Fatal(err)
 	}
 
 	fmt.Println("Token: ", ost.client.Token())
@@ -36,7 +35,7 @@ func TestAll(t *testing.T) {
 	fmt.Println("List containers:")
 	list, err := ost.ListContainers("conoha_")
 	if err != nil {
-    t.Error(err)
+		t.Error(err)
 	}
 	fmt.Println(list)
 
@@ -47,42 +46,42 @@ func TestAll(t *testing.T) {
 		err := ost.CreateContainer("conoha_container")
 		if err != nil && err != ErrBucketAlreadyExists {
 			fmt.Printf("DeleteContainer: %v\n", err)
-      t.Error(err)
+			t.Error(err)
 		}
 		fmt.Println("CreateContainer2")
 		err = ost.CreateContainer("conoha_container2")
 		if err != nil && err != ErrBucketAlreadyExists {
 			fmt.Printf("CreateContainer2: %v\n", err)
-      t.Error(err)
+			t.Error(err)
 		}
 
 		fmt.Println("DeleteContainer")
 		err = ost.DeleteContainer("conoha_container")
 		if err != nil && err != ErrConflict {
 			fmt.Printf("DeleteContainer: %v\n", err)
-      t.Error(err)
+			t.Error(err)
 		}
 
 		fmt.Println("DeleteContainer")
 		err = ost.DeleteContainer("not_exist_container")
 		if err != nil && err != ErrNoSuchBucket {
 			fmt.Printf("DeleteContainer: %v\n", err)
-      t.Error(err)
+			t.Error(err)
 		}
 	}
 
-  // clean up test file
-  ulfile := "./tmp/ulfile"
-  dlfile := "./tmp/dlfile"
-  os.Remove(ulfile)
-  os.Remove(dlfile)
+	// clean up test file
+	ulfile := "./tmp/ulfile"
+	dlfile := "./tmp/dlfile"
+	os.Remove(ulfile)
+	os.Remove(dlfile)
 
-  // make upload file
-  testText := []byte("object strage test\n")
-  err = ioutil.WriteFile(ulfile, testText, 0644)
+	// make upload file
+	testText := []byte("object strage test\n")
+	err = ioutil.WriteFile(ulfile, testText, 0644)
 	if err != nil {
 		fmt.Printf("Can't make file: %v\n", err)
-    t.Error(err)
+		t.Error(err)
 	}
 
 	// upload file
@@ -90,7 +89,7 @@ func TestAll(t *testing.T) {
 	err = ost.UploadFile("conoha_container2", ulfile)
 	if err != nil {
 		fmt.Printf("UploadFile: %v\n", err)
-    t.Error(err)
+		t.Error(err)
 	}
 
 	// download file
@@ -98,7 +97,7 @@ func TestAll(t *testing.T) {
 	err = ost.DownloadFile("conoha_container2", "ulfile", dlfile)
 	if err != nil {
 		fmt.Printf("DownloadFile: %v\n", err)
-    t.Error(err)
+		t.Error(err)
 	}
 
 	// publish container
@@ -123,7 +122,7 @@ func TestAll(t *testing.T) {
 	objlist, err := ost.ListObjects("conoha_container")
 	if err != nil {
 		fmt.Printf("ListObjects: %v\n", err)
-    t.Error(err)
+		t.Error(err)
 	}
 	for _, obj := range objlist {
 		fmt.Println("----------------")
@@ -137,7 +136,7 @@ func TestAll(t *testing.T) {
 	err = ost.DeleteObject("conoha_container2", "ulfile")
 	if err != nil {
 		fmt.Printf("DeleteFile: %v\n", err)
-    t.Error(err)
+		t.Error(err)
 	}
 
 }

@@ -1,0 +1,122 @@
+package objectstorage // import "github.com/tappoy/objectstorage"
+
+This package provides a simple object storage interface for storing and
+retrieving objects.
+
+Wrapping around the OpenStack Object Storage API. See below for the original
+OpenStack package.
+  - `github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1/containers`
+  - `github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1/objects`
+
+VARIABLES
+
+var (
+	// The bucket already exists.
+	ErrBucketAlreadyExists = errors.New("ErrBucketAlreadyExists")
+
+	// The request could not be completed due to a conflict with the current state of the target resource.
+	ErrConflict = errors.New("ErrConflict")
+
+	// The specified bucket does not exist.
+	ErrNoSuchBucket = errors.New("ErrNoSuchBucket")
+
+	// The specified key does not exist.
+	ErrNoSuchKey = errors.New("ErrNoSuchKey")
+
+	// The specified key does not exist.
+	ErrCannotCreateFile = errors.New("ErrCannotCreateFile")
+)
+
+TYPES
+
+type ObjectInfo struct {
+	// The size of the object in bytes.
+	Bytes int64
+
+	// The name of the object.
+	Name string
+
+	// The last modified time of the object.
+	LastModified time.Time
+}
+    This is returned when listing objects in the container.
+
+type ObjectStorage struct {
+	// Has unexported fields.
+}
+
+func NewObjectStorage(option Options) (*ObjectStorage, error)
+    Create a new ObjectStorage instance.
+
+    Errors:
+      - "ErrGophercloud: %v"
+
+func (ost *ObjectStorage) CreateContainer(name string) error
+    Create a new container.
+
+    Errors:
+      - ErrBucketAlreadyExists
+      - "ErrGophercloud: %v"
+
+func (ost *ObjectStorage) DeleteContainer(name string) error
+    Delete the container.
+
+    Errors:
+      - ErrConflict
+      - "ErrGophercloud: %v"
+
+func (ost *ObjectStorage) DeleteObject(containerName, objectName string) error
+    Delete the object from the container.
+
+    Errors:
+      - ErrNoSuchBucket
+      - "ErrGophercloud: %v"
+
+func (ost *ObjectStorage) DownloadFile(containerName string, objectName string, path string) error
+    Download the object from the container to the path.
+
+    Errors:
+      - ErrCannotCreateFile
+      - ErrNoSuchBucket
+      - ErrNoSuchKey
+      - "ErrGophercloud: %v"
+
+func (ost *ObjectStorage) ListContainers(prefix string) ([]string, error)
+    List the containers in the account.
+
+    Errors:
+      - "ErrGophercloud: %v"
+
+func (ost *ObjectStorage) ListObjects(containerName string) ([]ObjectInfo, error)
+    List the objects in the container.
+
+    Errors:
+      - ErrNoSuchBucket
+      - "ErrGophercloud: %v"
+
+func (ost *ObjectStorage) UploadFile(containerName string, path string) error
+    Upload a file to the container.
+
+    Errors:
+      - ErrNoSuchBucket
+      - "ErrGophercloud: %v"
+
+type Options struct {
+	// The URL of the authentication service.
+	AuthUrl string
+
+	// The username of the user.
+	Username string
+
+	// The password of the user.
+	Password string
+
+	// The ID of the tenant.
+	TenantId string
+
+	// The name of the domain.
+	// In ConoHa, it is the tenant name.
+	DomainName string
+}
+    The options for creating a new ObjectStorage instance.
+
