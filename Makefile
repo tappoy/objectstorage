@@ -1,13 +1,17 @@
+PACKAGE=github.com/tappoy/objectstorage
+
 WORKING_DIRS=tmp
 SRC=$(shell find . -name "*.go")
 BIN=tmp/$(shell basename $(CURDIR))
 FMT=tmp/fmt
 TEST=tmp/cover
 DOC=Document.txt
+COVER=tmp/cover
+COVER0=tmp/cover0
 
-.PHONY: all clean cover test
+.PHONY: all clean cover test lint fmt
 
-all: $(WORKING_DIRS) $(FMT) $(BIN) $(TEST) $(DOC)
+all: $(WORKING_DIRS) fmt $(BIN) test $(DOC)
 
 clean:
 	rm -rf $(WORKING_DIRS)
@@ -15,20 +19,23 @@ clean:
 $(WORKING_DIRS):
 	mkdir -p $(WORKING_DIRS)
 
-$(FMT): $(SRC)
-	go fmt ./... > $(FMT) 2>&1 || true
+fmt: $(SRC)
+	go fmt ./...
 
-$(BIN): $(SRC)
+go.sum: go.mod
+	go mod tidy
+
+$(BIN): $(SRC) go.sum
 	go build -o $(BIN)
-
-$(TEST): $(BIN)
-	make test
 
 $(DOC): $(SRC)
 	go doc -all . > $(DOC)
 
-cover: $(TEST)
-	grep "0$$" $(TEST) || true
+cover: $(COVER)
+	grep "0$$" $(COVER) | sed 's!$(PACKAGE)!.!' | tee $(COVER0)
 
-test:
-	go test -v -tags=mock -cover -coverprofile=$(TEST) ./...
+test: $(BIN)
+	go test -v -tags=mock -vet=all -cover -coverprofile=$(COVER)
+
+lint: $(BIN)
+	go vet
