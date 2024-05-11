@@ -13,12 +13,21 @@ func TestMain(m *testing.M) {
 }
 
 func TestAll(t *testing.T) {
-	option := Options{
-		AuthUrl:    os.Getenv("OS_AUTH_URL"),
-		Username:   os.Getenv("OS_USERNAME"),
-		Password:   os.Getenv("OS_PASSWORD"),
-		TenantId:   os.Getenv("OS_TENANT_ID"),
-		DomainName: os.Getenv("OS_DOMAIN_NAME"),
+	// get VAULT_PASSWORD from env
+	vaultPassword := os.Getenv("VAULT_PASSWORD")
+	if vaultPassword == "" {
+		t.Fatal("VAULT_PASSWORD is not set")
+	}
+
+	vaultDir := os.Getenv("VAULT_DIR")
+	if vaultDir == "" {
+		t.Fatal("VAULT_DIR is not set")
+	}
+
+	// get option from vault
+	option, err := AuthOptionsFromVault(vaultPassword, vaultDir)
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	fmt.Printf("option: %v\n", option)

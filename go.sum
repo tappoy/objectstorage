@@ -1,2 +1,6 @@
 github.com/gophercloud/gophercloud/v2 v2.0.0-beta.4 h1:4514NhZKSyc2srbqWgyP85HVhjEv9c0kxwQcDSR1/YQ=
 github.com/gophercloud/gophercloud/v2 v2.0.0-beta.4/go.mod h1:HbB8pJ/nycmlTRO++YTIFt9KUDx5c9gdaTFbk4oB5wA=
+github.com/tappoy/crypto v1.1.0 h1:Y7nZBgL6kU/9PQ9z/LpJXFhlQdwTN1SDjvFkxDJjuls=
+github.com/tappoy/crypto v1.1.0/go.mod h1:bIRaKMbqdSIkJCoei1HW6+HgN2CF2J9pDPhBEUrXZLI=
+github.com/tappoy/vault v1.1.0 h1:zkbXYWipVFDc6LsAJRGBTFEgO+hSKRawjkEFyAfEM94=
+github.com/tappoy/vault v1.1.0/go.mod h1:UG0OsSLGI0mSxj3i825mfWLH3F6wwzG1Q9KPNLSqxxs=
