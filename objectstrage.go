@@ -21,6 +21,8 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack"
 	"github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1/containers"
 	"github.com/gophercloud/gophercloud/v2/openstack/objectstorage/v1/objects"
+
+	"github.com/tappoy/vault"
 )
 
 var (
@@ -82,6 +84,63 @@ type Options struct {
 	// The name of the domain.
 	// In ConoHa, it is the tenant name.
 	DomainName string
+}
+
+var nilOptions = Options{}
+
+func vaultError(err error) error {
+	return fmt.Errorf("ErrVault: %v", err)
+}
+
+// AuthOptionsFromVault returns the Options from the vault.
+//
+// VaultKeys:
+//   - OS_AUTH_URL
+//   - OS_USERNAME
+//   - OS_PASSWORD
+//   - OS_TENANT_ID
+//   - OS_DOMAIN_NAME
+//
+// Errors:
+//   - "ErrVault: %v"
+func AuthOptionsFromVault(password string, vaultDir string) (Options, error) {
+	vaultClient, err := vault.NewVault(password, vaultDir)
+	if err != nil {
+		return nilOptions, vaultError(err)
+	}
+
+	authUrl, err := vaultClient.Get("OS_AUTH_URL")
+	if err != nil {
+		return nilOptions, vaultError(err)
+	}
+
+	username, err := vaultClient.Get("OS_USERNAME")
+	if err != nil {
+		return nilOptions, vaultError(err)
+	}
+
+	osPassword, err := vaultClient.Get("OS_PASSWORD")
+	if err != nil {
+		return nilOptions, vaultError(err)
+	}
+
+	tenantId, err := vaultClient.Get("OS_TENANT_ID")
+	if err != nil {
+		return nilOptions, vaultError(err)
+	}
+
+	domainName, err := vaultClient.Get("OS_DOMAIN_NAME")
+	if err != nil {
+		return nilOptions, vaultError(err)
+	}
+
+	return Options{
+		AuthUrl:    authUrl,
+		Username:   username,
+		Password:   osPassword,
+		TenantId:   tenantId,
+		DomainName: domainName,
+	}, nil
 }
 
 // Create a new ObjectStorage instance.

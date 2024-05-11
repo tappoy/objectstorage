@@ -131,3 +131,16 @@ type Options struct {
 }
     The options for creating a new ObjectStorage instance.
 
+func AuthOptionsFromVault(password string, vaultDir string) (Options, error)
+    AuthOptionsFromVault returns the Options from the vault.
+
+    VaultKeys:
+      - OS_AUTH_URL
+      - OS_USERNAME
+      - OS_PASSWORD
+      - OS_TENANT_ID
+      - OS_DOMAIN_NAME
+
+    Errors:
+      - "ErrVault: %v"
+
